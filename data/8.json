@@ -12,7 +12,7 @@
          "maxSpeed": "3.",
          "col1": "rgb(255,51,204)",
          "col2": "333.",
-         "engine": "s0_c01_v1.2.json",
+         "engine": "d00_c21_v0.1.json",
          "xTag": [
             "Speed",
             "-1.",
@@ -68,7 +68,7 @@
          "maxSpeed": "3.",
          "col1": "rgb(255,51,204)",
          "col2": "333.",
-         "engine": "s0_c01_v1.2.json",
+         "engine": "d00_c21_v0.1.json",
          "xTag": [
             "Speed",
             "-1.",
@@ -508,8 +508,8 @@
       },
       {
          "id": "18",
-         "wavfile": "data/Rabbit_Hole_Maar.mp3",
-         "mp3file": "data/Rabbit_Hole_Maar.mp3",
+         "wavfile": "https://streams.ilovemusic.de/iloveradio1.mp3",
+         "mp3file": "https://streams.ilovemusic.de/iloveradio1.mp3",
          "initTime": "111.",
          "endTime": "333.",
          "speed": "1.",
@@ -536,8 +536,8 @@
       },
       {
          "id": "19",
-         "wavfile": "data/Rabbit_Hole_Maar.mp3",
-         "mp3file": "data/Rabbit_Hole_Maar.mp3",
+         "wavfile": "https://streams.ilovemusic.de/iloveradio1.mp3",
+         "mp3file": "https://redbeemedia.streamabc.net/redbm-jam-mp3-160-4872691?sABC=64on8sn9%230%23n512qpq64n3s2n9o7640p123r6607pps%23ei&aw_0_1st.playerid=rv&amsparams=playerid:rv;skey:1689948073",
          "initTime": "111.",
          "endTime": "333.",
          "speed": "1.",
@@ -545,7 +545,7 @@
          "maxSpeed": "3.",
          "col1": "rgb(255,51,204)",
          "col2": "333.",
-         "engine": "s0_c01_v1.2.json",
+         "engine": "d00_c20_v0.1.json",
          "xTag": [
             "Speed",
             "-1.",
