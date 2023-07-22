@@ -705,6 +705,7 @@ async function createRNBO() {
     device = await RNBO.createDevice({ context, patcher });
     radioElement = document.getElementById('radioStream'); // Get the audio element
     // Load the radio stream URL into the audio element
+    radioElement.crossOrigin = 'anonymous';
     radioElement.src = radioStreamURL;
     // Create a MediaElementAudioSourceNode and connect it to the device
     const sourceNode = context.createMediaElementSource(radioElement);
