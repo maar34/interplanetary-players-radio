@@ -8,7 +8,7 @@ let trackI, filterI; // track 1 -
 let font1; // font variable
 let playStateI;
 let params; // url parameters
-let levelI, worldI_dist, cardColor;
+let levelI, worldI_dist, radioColor;
 let tempID, xDifference, yDifference;
 let loadingBar, loadP;
 let xSlider, ySlider, zSlider;
@@ -28,7 +28,7 @@ let wMaxD = 1544;
 
 
 let radioElement; // Declare a variable to store the audio element
-let radioStreamURL = 'https://radios.iwstreaming.uy/8030/stream'; // Replace this with the URL of your radio stream
+let radioStreamURL; // Replace this with the URL of your radio stream
 
 
 let worldI_speed = 1.0;
@@ -37,10 +37,11 @@ var numSamples = 1024;
 // Array of amplitude values (-1 to +1) over time.
 var samples = [];
 
-var card = {
+var radio = {
   id: "",
   wavfile: "",
   mp3file: "",
+  radioURL: "",
   initTime: "",
   endTime: "",
   speed: "",
@@ -69,7 +70,7 @@ function preload() {
 
   params = getURLParams();
 
-  game = loadJSON("data/" + params.g + ".json");
+  game = loadJSON("data/1.json");
 
   font1 = loadFont('fonts/Orbitron-VariableFont_wght.ttf');
 
@@ -101,20 +102,17 @@ function setup() {
   bcol = color(0, 0, 0, 10);
   col = color(255, 0, 0);
 
-  if (params.s == 0) {
-    card = game.A[params.c];
-  };
-  if (params.s == 1) {
-    card = game.B[params.c];
-  };
-  if (params.s == 2) {
-    card = game.C[params.c];
-  };
-  worldI_speed = card.speed;
+  // Check if params.r is available in the URL, otherwise use 0
+  const radioNumber = params.r ? params.r : 0;
 
-  //print (card.engine); 
-  xDifference = (card.xTag[2] - card.xTag[1]) > 10;
-  yDifference = (card.yTag[2] - card.yTag[1]) > 10;
+  // Use the radioNumber to access the corresponding element in game.A array
+  radio = game.A[radioNumber];
+
+  worldI_speed = radio.speed;
+
+  //print (radio.engine); 
+  xDifference = (radio.xTag[2] - radio.xTag[1]) > 10;
+  yDifference = (radio.yTag[2] - radio.yTag[1]) > 10;
 
 
   createDom();
@@ -134,7 +132,7 @@ function setup() {
   //easycam.removeMouseListeners();
 
 
-  cardColor = color(card.col1);
+  radioColor = color(radio.col1);
 
   // Use the selected Font 
 
@@ -186,7 +184,7 @@ function draw() {
   pop();
 
   noFill();
-  stroke(cardColor);
+  stroke(radioColor);
 
   easycam.beginHUD();
 
@@ -240,7 +238,7 @@ function playPause() {
 
 
   }
-  device.scheduleEvent(messageEvent);
+//  device.scheduleEvent(messageEvent);
 
 //  xSlider.value(xSlider.value());
 //  xInput();
@@ -304,8 +302,8 @@ function loadingAudio(_loadingN) {
 
 function createDom() {
 
-  let domColor = color (card.col1);
-  let domAlpha = color (card.col1); 
+  let domColor = color (radio.col1);
+  let domAlpha = color (radio.col1); 
   domAlpha.setAlpha(127);
 
   // create buttons and sliderss
@@ -373,7 +371,7 @@ function createDom() {
 
   // create sliders
 
-  initSpeed = map(float((card.speed)), float(card.minSpeed), float(card.maxSpeed), 0., 255.);
+  initSpeed = map(float((radio.speed)), float(radio.minSpeed), float(radio.maxSpeed), 0., 255.);
   xSlider = createSlider(0., 255, 128);
   xSlider.style('width', sliderW + 'px');
   xSlider.addClass("slider");
@@ -456,13 +454,13 @@ function releaseDOM() {
 function xInput() {
 
   inputX.value = xSlider.value();
-  xData = map(xSlider.value(), 0., 255., float(card.xTag[1]), float(card.xTag[2]));
-  // if (card.xTag[0] == "Speed") worldI_speed = xData; 
+  xData = map(xSlider.value(), 0., 255., float(radio.xTag[1]), float(radio.xTag[2]));
+  // if (radio.xTag[0] == "Speed") worldI_speed = xData; 
   t6.html(nfs(xData, 1, 2));
-  xDataNorm = map(xData, float(card.xTag[1]), float(card.xTag[2]), -1., 1.);
+  xDataNorm = map(xData, float(radio.xTag[1]), float(radio.xTag[2]), -1., 1.);
 
   if (xDifference) {
-    yDataNorm = map(yData, float(card.yTag[1]), float(card.yTag[2]), -1., 1.);
+    yDataNorm = map(yData, float(radio.yTag[1]), float(radio.yTag[2]), -1., 1.);
     easyY = xDataNorm * -0.077;
   } else {
     easyY = xData * -0.077;
@@ -473,12 +471,12 @@ function xInput() {
 function yInput() {
 
   inputY.value = ySlider.value();
-  yData = map(ySlider.value(), 0., 255., float(card.yTag[1]), float(card.yTag[2]));
+  yData = map(ySlider.value(), 0., 255., float(radio.yTag[1]), float(radio.yTag[2]));
   t7.html(nfs(yData, 1, 2));
 
   // if the range in x axe is greter than 10 (xDifference) then animate planet with normalized value, else use the normal value - this exception works nice with speed and non simetrical parameters
   if (yDifference) {
-    yDataNorm = map(yData, float(card.yTag[1]), float(card.yTag[2]), -1., 1.);
+    yDataNorm = map(yData, float(radio.yTag[1]), float(radio.yTag[2]), -1., 1.);
     easyX = yDataNorm * -0.077;
   } else {
     easyX = yData * -0.077;
@@ -500,7 +498,7 @@ function zInput() {
 
   t5.html(nfs(worldI_dist, 1, 2));
 
-  zData = map(zSlider.value(), 0., 255., float(card.zTag[1]), float(card.zTag[2]));
+  zData = map(zSlider.value(), 0., 255., float(radio.zTag[1]), float(radio.zTag[2]));
   t8.html(nfs(zData, 1, 2));
 
 
@@ -515,10 +513,10 @@ function xOutput() {
     inputX.value = deltaX;
 
     xSlider.value(deltaX);
-    xData = map(xSlider.value(), 0., 255., float(card.xTag[1]), float(card.xTag[2]));
+    xData = map(xSlider.value(), 0., 255., float(radio.xTag[1]), float(radio.xTag[2]));
     // if the range in x axe is greter than 10 (xDifference) then animate planet with normalized value, else use the normal value - this exception works nice with speed and non simetrical parameters
     if (xDifference) {
-      yDataNorm = map(yData, float(card.yTag[1]), float(card.yTag[2]), -1., 1.);
+      yDataNorm = map(yData, float(radio.yTag[1]), float(radio.yTag[2]), -1., 1.);
       easyX = yDataNorm * -0.077;
     } else {
       easyX = yData * -0.077;
@@ -526,7 +524,7 @@ function xOutput() {
 
 
 
-    //  if (card.xTag[0] == "Speed") worldI_speed = xData; 
+    //  if (radio.xTag[0] == "Speed") worldI_speed = xData; 
     t6.html(nfs(xData, 1, 2));
 
 
@@ -541,8 +539,8 @@ function yOutput() {
     var deltaY = map(startY, 0., sh, 255., 0.);
     ySlider.value(deltaY);
     inputY.value = ySlider.value();
-    yData = map(ySlider.value(), 0., 255., float(card.yTag[1]), float(card.yTag[2]));
-    yDataNorm = map(yData, float(card.yTag[1]), float(card.yTag[2]), -1., 1.);
+    yData = map(ySlider.value(), 0., 255., float(radio.yTag[1]), float(radio.yTag[2]));
+    yDataNorm = map(yData, float(radio.yTag[1]), float(radio.yTag[2]), -1., 1.);
 
     t7.html(nfs(yData, 1, 2));
 
@@ -564,7 +562,7 @@ function zOutput(delta) {
     t5.html(nfs(worldI_dist, 1, 2));
     easycam.setDistance(worldI_dist, 1.);
 
-    var zData = map(zSlider.value(), 0., 255., float(card.zTag[1]), float(card.zTag[2]));
+    var zData = map(zSlider.value(), 0., 255., float(radio.zTag[1]), float(radio.zTag[2]));
     t8.html(nfs(zData, 1, 2));
 
 
@@ -576,7 +574,7 @@ function zOutput(delta) {
 function guiData() {
 
   let offset = 3.;
-  let textColor = card.col1;
+  let textColor = radio.col1;
 
   // Render the labels
 
@@ -584,15 +582,15 @@ function guiData() {
   t1.position(padX * offset, padY * offset);
   t1.style('color', textColor);
 
-  t2 = createP(card.xTag[0] + ":");
+  t2 = createP(radio.xTag[0] + ":");
   t2.position(padX * offset, padY * offset + 20);
   t2.style('color', textColor);
 
-  t3 = createP(card.yTag[0] + ":");
+  t3 = createP(radio.yTag[0] + ":");
   t3.position(padX * offset, padY * offset + 40);
   t3.style('color', textColor);
 
-  t4 = createP(card.zTag[0] + ":");
+  t4 = createP(radio.zTag[0] + ":");
   t4.position(padX * offset, padY * offset + 60);
   t4.style('color', textColor);
 
@@ -696,17 +694,21 @@ function initVariables() {
 
 async function createRNBO() {
   try {
-    const patchExportURL = "export/" + card.engine;
+    const patchExportURL = "export/" + radio.engine;
     let WAContext = window.AudioContext || window.webkitAudioContext;
     context = new WAContext();
+
+    radioStreamURL = radio.radioURL;
 
     let rawPatcher = await fetch(patchExportURL);
     let patcher = await rawPatcher.json();
     device = await RNBO.createDevice({ context, patcher });
-    radioElement = document.getElementById('radioStream'); // Get the audio element
+    //radioElement = document.getElementById('radioStream'); // Get the audio element
     // Load the radio stream URL into the audio element
-    radioElement.crossOrigin = 'anonymous';
+    radioElement = new Audio();
     radioElement.src = radioStreamURL;
+    radioElement.crossOrigin = 'anonymous';
+
     // Create a MediaElementAudioSourceNode and connect it to the device
     const sourceNode = context.createMediaElementSource(radioElement);
     sourceNode.connect(device.node);
