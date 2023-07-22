@@ -1,0 +1,92 @@
+{
+   "description": "Configuration of first release of ENT Cards",
+   "A": [
+      {
+         "id": "0",
+         "wavfile": "data/Rabbit_Hole_Maar.mp3",
+         "mp3file": "data/Rabbit_Hole_Maar.mp3",
+         "radioURL": "https://radios.iwstreaming.uy/8030/stream",
+         "initTime": "111.",
+         "endTime": "333.",
+         "speed": "1.",
+         "minSpeed": ".1",
+         "maxSpeed": "3.",
+         "col1": "rgb(255,51,204)",
+         "col2": "333.",
+         "engine": "d00_c21_v0.1.json",
+         "xTag": [
+            "Speed",
+            "-1.",
+            "3."
+         ],
+         "yTag": [
+            "Tremolo",
+            "-100.",
+            "100."
+         ],
+         "zTag": [
+            "Reverb",
+            "-100.",
+            "100."
+         ]
+      },
+      {
+         "id": "1",
+         "wavfile": "data/Rabbit_Hole_Maar.mp3",
+         "mp3file": "data/Rabbit_Hole_Maar.mp3",
+         "radioURL": "https://streams.ilovemusic.de/iloveradio1.mp3",
+         "initTime": "111.",
+         "endTime": "333.",
+         "speed": "1",
+         "minSpeed": "-1.",
+         "maxSpeed": "4.",
+         "col1": "rgb(255,51,204)",
+         "col2": "333.",
+         "engine": "d00_c21_v0.1.json",
+         "xTag": [
+            "Speed",
+            "-1.",
+            "3."
+         ],
+         "yTag": [
+            "Tremolo",
+            "-100.",
+            "100."
+         ],
+         "zTag": [
+            "Reverb",
+            "-100.",
+            "100."
+         ]
+      },
+      {
+         "id": "2",
+         "wavfile": "data/Rabbit_Hole_Maar.mp3",
+         "mp3file": "data/Rabbit_Hole_Maar.mp3",
+         "radioURL": "https://radios.iwstreaming.uy/8030/stream",
+         "initTime": "111.",
+         "endTime": "333.",
+         "speed": "1.",
+         "minSpeed": ".1",
+         "maxSpeed": "3.",
+         "col1": "rgb(255,51,204)",
+         "col2": "333.",
+         "engine": "d00_c21_v0.1.json",
+         "xTag": [
+            "Speed",
+            "-1.",
+            "3."
+         ],
+         "yTag": [
+            "Tremolo",
+            "-100.",
+            "100."
+         ],
+         "zTag": [
+            "Reverb",
+            "-100.",
+            "100."
+         ]
+      }
+   ]
+}
