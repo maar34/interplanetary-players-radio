@@ -33,9 +33,9 @@ let radioStreamURL; // Replace this with the URL of your radio stream
 
 let worldI_speed = 1.0;
 
-var numSamples = 1024;
+const numSamples = 1024;
 // Array of amplitude values (-1 to +1) over time.
-var samples = [];
+let samples = [];
 
 var radio = {
   id: "",
@@ -709,10 +709,14 @@ async function createRNBO() {
     radioElement.src = radioStreamURL;
     radioElement.crossOrigin = 'anonymous';
 
+    // Replace "{station_id}" with the actual station ID
+    getNowPlaying();
+
     // Create a MediaElementAudioSourceNode and connect it to the device
     const sourceNode = context.createMediaElementSource(radioElement);
     sourceNode.connect(device.node);
     
+
     //sourceNode.connect(context.destination);
     
     loaded();
@@ -731,11 +735,30 @@ async function createRNBO() {
   }
 }
 
-async function loadRadioStream() {
-  try {
 
-  } catch (error) {
-    console.log(error);
-    errorLoadingAudio(error);
-  }
+function getNowPlaying() {
+  const endpointUrl = 'https://s1.ssl-stream.com/api/nowplaying/maar_world_radio';
+
+  fetch(endpointUrl, {
+      headers: {
+          'accept': 'application/json'
+      }
+  })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          return response.json();
+      })
+      .then(data => {
+          displayNowPlaying(data);
+      })
+      .catch(error => {
+          console.error('Error fetching now playing data:', error);
+      });
+}
+
+function displayNowPlaying(nowPlayingData) {
+  console.log('Now Playing:', nowPlayingData);
+  // Here you can access and display specific properties from the nowPlayingData object.
 }
