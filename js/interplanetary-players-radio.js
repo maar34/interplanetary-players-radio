@@ -750,41 +750,55 @@ function initVariables() {
 }
 
 
+
+
 async function createRNBO() {
   try {
+
     const patchExportURL = "export/" + radio.engine;
+
+
+
+
+
     let WAContext = window.AudioContext || window.webkitAudioContext;
     context = new WAContext();
 
-    radioStreamURL = radio.radioURL;
+    // Feature detection for Audio Worklet support
+    if (context.audioWorklet !== undefined && context.audioWorklet.addModule !== undefined) {
+      // Register the AudioWorklet processor
+      await context.audioWorklet.addModule('js/radio-processor.js');
 
-    let rawPatcher = await fetch(patchExportURL);
-    let patcher = await rawPatcher.json();
-    device = await RNBO.createDevice({ context, patcher });
-    //radioElement = document.getElementById('radioStream'); // Get the audio element
-    // Load the radio stream URL into the audio element
-    radioElement = new Audio();
-    radioElement.src = radioStreamURL;
-    radioElement.crossOrigin = 'anonymous';
+      radioStreamURL = radio.radioURL;
 
-    // Replace "{station_id}" with the actual station ID
-    getNowPlaying();
-    setInterval(getNowPlaying, 5000); // 5000 milliseconds = 5 seconds
-    // Create a MediaElementAudioSourceNode and connect it to the device
-    const sourceNode = context.createMediaElementSource(radioElement);
-    sourceNode.connect(device.node);
-    
+      // Load the radio stream URL into the audio element
+      radioElement = new Audio();
+      radioElement.src = radioStreamURL;
+      radioElement.crossOrigin = 'anonymous';
 
-    //sourceNode.connect(context.destination);
-    
+      // Create an instance of the AudioWorkletNode using the registered processor
+      device = new AudioWorkletNode(context, 'radio-processor');
 
+      // Connect the audio element to the AudioWorkletNode
+      const sourceNode = context.createMediaElementSource(radioElement);
+      sourceNode.connect(device);
 
-    inputX = device.parametersById.get("inputX");
-    inputY = device.parametersById.get("inputY");
-    inputZ = device.parametersById.get("inputZ");
+      // Use RNBO to create the device and connect it to the destination
+      await RNBO.createDevice({ context, device });
+      device.connect(RNBO.destination);
 
-    device.node.connect(context.destination);
+      inputX = device.parametersById.get("inputX");
+      inputY = device.parametersById.get("inputY");
+      inputZ = device.parametersById.get("inputZ");
 
+      getNowPlaying();
+      setInterval(getNowPlaying, 5000); // 5000 milliseconds = 5 seconds
+
+      // Now you can use the device (AudioWorkletNode) for processing audio
+    } else {
+      // Fallback to a different audio processing method (if needed)
+      console.log('Audio Worklets not supported. Fallback to another method.');
+    }
 
   } catch (error) {
     console.log(error);

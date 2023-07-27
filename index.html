@@ -18,6 +18,36 @@
     <!-- p5.easycam -->
     <script src="libraries/p5.easycam.js"></script>
 
+
+    <script>
+      // Create the AudioWorklet processor
+      class RadioProcessor extends AudioWorkletProcessor {
+        process(inputs, outputs, parameters) {
+          const input = inputs[0];
+          const output = outputs[0];
+    
+          for (let channel = 0; channel < output.length; ++channel) {
+            for (let i = 0; i < output[channel].length; ++i) {
+              output[channel][i] = input[channel][i]; // Passthrough
+            }
+          }
+    
+          return true;
+        }
+      }
+    
+      // Register the AudioWorklet processor
+      audioContext.audioWorklet.addModule('js/radio-processor.js')
+        .then(() => {
+          // AudioWorklet processor is now registered
+          console.log('RadioProcessor registered.');
+        })
+        .catch((error) => {
+          console.error('Error registering RadioProcessor:', error);
+        });
+    </script>
+
+    
   </head>
 
   <body>
