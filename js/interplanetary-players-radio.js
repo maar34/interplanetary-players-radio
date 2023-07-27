@@ -25,6 +25,7 @@ let device;
 let inputX, inputY, inputZ;
 let wMinD = 333;
 let wMaxD = 1544;
+let userInteracted = false;
 
 
 let radioElement; // Declare a variable to store the audio element
@@ -64,7 +65,6 @@ var easycam,
   },
   panelX = 30, panelY = 45;
 
-document.oncontextmenu = () => false; // no right click
 
 function preload() {
 
@@ -78,6 +78,7 @@ function preload() {
 
 document.body.onclick = () => {
   context.resume();
+
 }
 // prevent screen movement on touchstart event
 document.body.addEventListener('touchstart', function (e) {
@@ -138,12 +139,18 @@ function setup() {
 
   textFont(font1);
   textSize(27);
-  createRNBO();
+
+  loaded();
+
 
   //    loadingAudio(0);
 }
 
 function draw() {
+
+
+
+  
   if (playStateI == 1) background(0, 0, 0);
   noStroke();
   lights();
@@ -198,7 +205,7 @@ function draw() {
   vertex(sw - margin, sh * .14);
   vertex(sw - margin, sh - margin);
   vertex(sw * .14, sh - margin);
-  vertex(margin + 0, margin + sh * .86);
+  vertex(margin + 0,  sh - margin );
   vertex(margin + 0, margin + 0);
   endShape();
 
@@ -209,6 +216,7 @@ function draw() {
 
 
 function playPause() {
+  
 
   notDOM = false;
 
@@ -272,10 +280,10 @@ function loaded() {
   xSlider.show();
   ySlider.show();
   zSlider.show();
-  playButton.show();
   xButton.show();
   yButton.show();
   zButton.show();
+  playButton.show();
 
   guiData();
 
@@ -304,22 +312,9 @@ function createDom() {
 
   let domColor = color (radio.col1);
   let domAlpha = color (radio.col1); 
-  domAlpha.setAlpha(127);
+  domAlpha.setAlpha(190);
 
-  // create buttons and sliderss
-  playButton = createButton('&#9655');
-  playButton.position(sw * .45, 34);
-  playButton.style('width', btW + 'px');
-  playButton.style('height', btH + 'px');
-  playButton.style('background-color', domColor);
-  playButton.style('color', domAlpha);
-  playButton.style('font-size', '2rem');
-  playButton.style('border', 'none');
-  playButton.style('background', 'none');
-  playButton.mousePressed(playPause);
-  playButton.mouseReleased(releaseDOM);
-  playButton.touchEnded(releaseDOM);
-  //playButton.addClass("crosshair");
+
 
   xButton = createButton('&#11042');
 
@@ -367,6 +362,23 @@ function createDom() {
   xButton.position(innerWidth * .5 - (btW * .5), innerHeight * .8);
   yButton.position(-11., innerHeight * .37);
   zButton.position(innerWidth * .7, innerHeight * .37);
+
+
+    // create buttons and sliderss
+    playButton = createButton('&#9655');
+    playButton.position( -11 , innerHeight * .88);
+
+    playButton.style('width',  btW+ 'px');
+    playButton.style('height',  btH + 'px' );
+    playButton.style('background-color', domColor);
+    playButton.style('color', domAlpha);
+    playButton.style('font-size', '2rem');
+    playButton.style('border', 'none');
+    playButton.style('background', 'none');
+    playButton.mousePressed(handleFirstInteraction);
+    playButton.mouseReleased(releaseDOM);
+    playButton.touchEnded(releaseDOM);
+
 
 
   // create sliders
@@ -427,15 +439,19 @@ function createDom() {
 
 function updateDom() {
 
-  // move buttons
+  sw = window.innerWidth;
+  sh = window.innerHeight;
 
-  playButton.position(innerWidth * .5 - (btW), 34);
+  sliderW = sw * .6;
+  sliderH = sliderW * .11;
+
+  // move buttons
+  playButton.position( -11 , innerHeight * .88);
   xButton.position(innerWidth * .5 - (btW * .5), innerHeight * .8);
   yButton.position(-11., innerHeight * .34);
   zButton.position(innerWidth * .7, innerHeight * .34);
 
   // move sliders
-
   xSlider.position(innerWidth * .5 - (sliderW * .5), innerHeight * .8);
   ySlider.position(0, innerHeight * .4);
   zSlider.position(innerWidth * 0.7- (sliderW * .5), innerHeight * .4);
@@ -612,6 +628,41 @@ function guiData() {
   t8.position(padX * offset + 130, padY * offset + 60);
   t8.style('color', textColor);
 
+    // Render Metadata
+
+    t11 = createP('Astronauts:');
+    t11.position(padX * offset, padY * offset + 100 );
+    t11.style('color', radio.col2);
+  
+    t12 = createP("Streamer" + ":");
+    t12.position(padX * offset, padY * offset + 120);
+    t12.style('color', radio.col2);
+  
+    t13 = createP("Data" + ":");
+    t13.position(padX * offset, padY * offset + 140);
+    t13.style('color', radio.col2);
+  
+    t14 = createP("Artist" + ":");
+    t14.position(padX * offset, padY * offset + 160);
+    t14.style('color', radio.col2);
+  
+    t15 = createP();
+    t15.html(worldI_dist);
+    t15.position(padX * offset + 130, padY * offset + 100);
+    t15.style('color', radio.col2);
+  
+    t16 = createP();
+    t16.position(padX * offset + 130, padY * offset + 120);
+    t16.style('color', radio.col2);
+  
+    t17 = createP("0");
+    t17.position(padX * offset + 130, padY * offset + 140);
+    t17.style('color', radio.col2);
+  
+    t18 = createP("0");
+    t18.position(padX * offset + 130, padY * offset + 160);
+    t18.style('color', radio.col2);
+
 }
 
 function loadGUI() {
@@ -711,7 +762,7 @@ async function createRNBO() {
 
     // Replace "{station_id}" with the actual station ID
     getNowPlaying();
-
+    setInterval(getNowPlaying, 5000); // 5000 milliseconds = 5 seconds
     // Create a MediaElementAudioSourceNode and connect it to the device
     const sourceNode = context.createMediaElementSource(radioElement);
     sourceNode.connect(device.node);
@@ -719,7 +770,6 @@ async function createRNBO() {
 
     //sourceNode.connect(context.destination);
     
-    loaded();
 
 
     inputX = device.parametersById.get("inputX");
@@ -752,6 +802,8 @@ function getNowPlaying() {
       })
       .then(data => {
           displayNowPlaying(data);
+          
+
       })
       .catch(error => {
           console.error('Error fetching now playing data:', error);
@@ -759,6 +811,24 @@ function getNowPlaying() {
 }
 
 function displayNowPlaying(nowPlayingData) {
-  console.log('Now Playing:', nowPlayingData);
-  // Here you can access and display specific properties from the nowPlayingData object.
+  //console.log('Now Playing:', nowPlayingData);
+  t15.html(nowPlayingData.listeners.current);
+  t16.html(nowPlayingData.live.streamer_name);
+  t17.html(nowPlayingData.now_playing.song.title);
+  t18.html(nowPlayingData.now_playing.song.artist);
+}
+
+
+function handleFirstInteraction() {
+  if (!userInteracted) {
+    userInteracted = true;
+    createRNBO();
+    setTimeout( playPause, 300);
+  }else{
+
+    playPause();
+
+  }
+ 
+
 }
