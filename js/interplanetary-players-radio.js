@@ -77,8 +77,15 @@ function preload() {
 }
 
 document.body.onclick = () => {
-  context.resume();
+  if (!userInteracted) {
+    //playButton.click();
+    handleFirstInteraction();
+  }else{
 
+    context.resume();
+
+  }
+  
 }
 // prevent screen movement on touchstart event
 document.body.addEventListener('touchstart', function (e) {
