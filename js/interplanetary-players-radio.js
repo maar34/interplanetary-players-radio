@@ -757,7 +757,7 @@ async function createRNBO() {
 
     const patchExportURL = "export/" + radio.engine;
     let WAContext = window.AudioContext || window.webkitAudioContext;
-    context = new WAContext();
+    const context = new WAContext();
 
     radioStreamURL = radio.radioURL;
 
