@@ -12,7 +12,7 @@
          "minSpeed": ".1",
          "maxSpeed": "3.",
          "col1": "rgb(255,51,204)",
-         "col2": "rgb(0,255,0)",
+         "col2": "rgb(51,255,255)",
          "engine": "radio-engine_01_v0.1.json",
          "xTag": [
             "Pitch",
@@ -41,8 +41,8 @@
          "minSpeed": "-1.",
          "maxSpeed": "4.",
          "col1": "rgb(255,51,204)",
-         "col2": "333.",
-         "engine": "d00_c21_v0.1.json",
+         "col2": "rgb(51,255,255)",
+         "engine": "radio-engine_01_v0.1.json",
          "xTag": [
             "Speed",
             "-1.",
@@ -70,8 +70,8 @@
          "minSpeed": ".1",
          "maxSpeed": "3.",
          "col1": "rgb(255,51,204)",
-         "col2": "333.",
-         "engine": "d00_c21_v0.1.json",
+         "col2": "rgb(51,255,255)",
+         "engine": "radio-engine_01_v0.1.json",
          "xTag": [
             "Speed",
             "-1.",
