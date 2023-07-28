@@ -26,7 +26,7 @@ let inputX, inputY, inputZ;
 let wMinD = 333;
 let wMaxD = 1544;
 let userInteracted = false;
-
+let context;
 
 let radioElement; // Declare a variable to store the audio element
 let radioStreamURL; // Replace this with the URL of your radio stream
@@ -777,9 +777,14 @@ async function createRNBO() {
     setInterval(getNowPlaying, 5000); // 5000 milliseconds = 5 seconds
     
     // Create the devices
+    const parameters = {
+      context: context,
+      patcher: patcher,
+      type: "auto", // Set the device type to "worklet"
+    }
 
     const sourceNode = context.createMediaElementSource(radioElement);
-    const  device = await RNBO.createDevice({ context, patcher });    
+    device = await RNBO.createDevice(parameters);
     
     // Connect the devices in series
 
@@ -821,6 +826,8 @@ function getNowPlaying() {
           console.error('Error fetching now playing data:', error);
       });
 }
+
+
 
 function displayNowPlaying(nowPlayingData) {
   //console.log('Now Playing:', nowPlayingData);
