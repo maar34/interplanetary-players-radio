@@ -21,7 +21,7 @@ var game, deck, suit, loadDeck;
 let cam1;
 let portrait;
 let notDOM;
-let device;
+//let device;
 let inputX, inputY, inputZ;
 let wMinD = 333;
 let wMaxD = 1544;
@@ -752,38 +752,43 @@ function initVariables() {
 
 async function createRNBO() {
   try {
+
     const patchExportURL = "export/" + radio.engine;
     let WAContext = window.AudioContext || window.webkitAudioContext;
     context = new WAContext();
 
     radioStreamURL = radio.radioURL;
 
+
+    // Fetch the exported RNBO patch
+
     let rawPatcher = await fetch(patchExportURL);
     let patcher = await rawPatcher.json();
-    device = await RNBO.createDevice({ context, patcher });
-    //radioElement = document.getElementById('radioStream'); // Get the audio element
-    // Load the radio stream URL into the audio element
+    
+     // Create Radio Stream Player   
+
     radioElement = new Audio();
     radioElement.src = radioStreamURL;
     radioElement.crossOrigin = 'anonymous';
 
-    // Replace "{station_id}" with the actual station ID
+    // Get Metadata from the radio. 
+
     getNowPlaying();
     setInterval(getNowPlaying, 5000); // 5000 milliseconds = 5 seconds
-    // Create a MediaElementAudioSourceNode and connect it to the device
+    
+    // Create the devices
+
     const sourceNode = context.createMediaElementSource(radioElement);
+    const  device = await RNBO.createDevice({ context, patcher });    
+    
+    // Connect the devices in series
+
     sourceNode.connect(device.node);
-    
-
-    //sourceNode.connect(context.destination);
-    
-
+    device.node.connect(context.destination);
 
     inputX = device.parametersById.get("inputX");
     inputY = device.parametersById.get("inputY");
     inputZ = device.parametersById.get("inputZ");
-
-    device.node.connect(context.destination);
 
 
   } catch (error) {
