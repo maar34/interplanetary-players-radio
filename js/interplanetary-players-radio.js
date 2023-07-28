@@ -27,6 +27,7 @@ let wMinD = 333;
 let wMaxD = 1544;
 let userInteracted = false;
 let context;
+let scriptProcessor;
 
 let radioElement; // Declare a variable to store the audio element
 let radioStreamURL; // Replace this with the URL of your radio stream
@@ -236,7 +237,7 @@ function playPause() {
     context.resume();
  //   messageEvent = new RNBO.MessageEvent(RNBO.TimeNow, "play", [1]);
  
-    radioElement.play();
+    //radioElement.play();
 
    // device.scheduleEvent(messageEvent2);
     // device.scheduleEvent(messageEvent3);
@@ -249,7 +250,7 @@ function playPause() {
     playButton.style('transform', 'rotate(0deg)');
     playButton.html('&#9655');
     playStateI = 0;
-    radioElement.pause();
+    //radioElement.pause();
 
 
   }
@@ -749,58 +750,71 @@ function initVariables() {
 
 }
 
-
 async function createRNBO() {
   try {
-
     const patchExportURL = "export/" + radio.engine;
-    let WAContext = window.AudioContext || window.webkitAudioContext;
+    const WAContext = window.AudioContext || window.webkitAudioContext;
     context = new WAContext();
 
     radioStreamURL = radio.radioURL;
 
-
-    // Fetch the exported RNBO patch
-
-    let rawPatcher = await fetch(patchExportURL);
-    let patcher = await rawPatcher.json();
-    
-     // Create Radio Stream Player   
-
-    radioElement = new Audio();
-    radioElement.src = radioStreamURL;
-    radioElement.crossOrigin = 'anonymous';
-
     // Get Metadata from the radio. 
-
     getNowPlaying();
     setInterval(getNowPlaying, 5000); // 5000 milliseconds = 5 seconds
-    
-    // Create the devices
-    const parameters = {
-      context: context,
-      patcher: patcher,
-      type: "auto", // Set the device type to "worklet"
-    }
 
-    const sourceNode = context.createMediaElementSource(radioElement);
-    device = await RNBO.createDevice(parameters);
-    
-    // Connect the devices in series
+    // Fetch the exported RNBO patch and store it in the patcher variable
+    let rawPatcher = await fetch(patchExportURL);
+    patcher = await rawPatcher.json();
 
-    sourceNode.connect(device.node);
-    device.node.connect(context.destination);
-
-    inputX = device.parametersById.get("inputX");
-    inputY = device.parametersById.get("inputY");
-    inputZ = device.parametersById.get("inputZ");
-
-
+    // Fetch and play the radio audio stream using ScriptProcessorNode
+    await playRadioStream(radioStreamURL, patcher);
   } catch (error) {
     console.log(error);
     errorLoadingAudio(error);
   }
 }
+
+// Function to play the radio audio stream
+async function playRadioStream(streamURL, patcher) {
+  const scriptProcessorSize = 1024; // Adjust the buffer size as needed.
+
+  const response = await fetch('https://s1.ssl-stream.com//listen/maar_world_radio/stream?&_ic2=1690055855117');
+  const buffer = await response.arrayBuffer();
+  const audioBuffer = await context.decodeAudioData(buffer);
+
+  scriptProcessor = context.createScriptProcessor(scriptProcessorSize, 0, 1);
+
+  scriptProcessor.onaudioprocess = function (event) {
+    const outputBuffer = event.outputBuffer;
+    const channelData = outputBuffer.getChannelData(0);
+    const sourceData = audioBuffer.getChannelData(0); // Assuming a single channel audio.
+
+    // Copy the audio data from the decoded audio buffer to the output buffer.
+    for (let i = 0; i < scriptProcessorSize; i++) {
+      channelData[i] = sourceData[i];
+    }
+  };
+
+  // Connect the ScriptProcessorNode to the destination (speakers).
+  scriptProcessor.connect(context.destination);
+
+  // Create the devices
+  const parameters = {
+    context: context,
+    patcher: patcher,
+    type: "auto", // Set the device type to "worklet"
+  };
+
+  device = await RNBO.createDevice(parameters);
+
+  // Connect the devices in series
+  // device.node.connect(context.destination);
+
+  inputX = device.parametersById.get("inputX");
+  inputY = device.parametersById.get("inputY");
+  inputZ = device.parametersById.get("inputZ");
+}
+
 
 
 function getNowPlaying() {
