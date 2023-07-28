@@ -22,6 +22,7 @@ let cam1;
 let portrait;
 let notDOM;
 //let device;
+let playerDevice;
 let inputX, inputY, inputZ;
 let wMinD = 333;
 let wMaxD = 1544;
@@ -234,11 +235,12 @@ function playPause() {
 
     playButton.html('II');
     context.resume();
- //   messageEvent = new RNBO.MessageEvent(RNBO.TimeNow, "play", [1]);
- 
-    radioElement.play();
+    messageEvent = new RNBO.MessageEvent(RNBO.TimeNow, "play", [1]);
+    playerDevice.scheduleEvent(messageEvent);
 
-   // device.scheduleEvent(messageEvent2);
+   // radioElement.play();
+
+   //device.scheduleEvent(messageEvent2);
     // device.scheduleEvent(messageEvent3);
     playStateI = 1;
 
@@ -249,11 +251,11 @@ function playPause() {
     playButton.style('transform', 'rotate(0deg)');
     playButton.html('&#9655');
     playStateI = 0;
-    radioElement.pause();
+    //radioElement.pause();
+    playerDevice.scheduleEvent(messageEvent);
 
 
   }
-//  device.scheduleEvent(messageEvent);
 
 //  xSlider.value(xSlider.value());
 //  xInput();
@@ -762,14 +764,20 @@ async function createRNBO() {
 
     // Fetch the exported RNBO patch
 
-    let rawPatcher = await fetch(patchExportURL);
-    let patcher = await rawPatcher.json();
+    let rawPatcher = await fetch( "export/radioPlayer.json");
+    playerPatcher = await rawPatcher.json();
+
+    rawPatcher = await fetch(patchExportURL);
+    const fxPatcher = await rawPatcher.json();
+
+
+
     
      // Create Radio Stream Player   
 
-    radioElement = new Audio();
-    radioElement.src = radioStreamURL;
-    radioElement.crossOrigin = 'anonymous';
+    //radioElement = new Audio();
+    //radioElement.src = radioStreamURL;
+    //radioElement.crossOrigin = 'anonymous';
 
     // Get Metadata from the radio. 
 
@@ -778,17 +786,29 @@ async function createRNBO() {
     
     // Create the devices
 
-    const sourceNode = context.createMediaElementSource(radioElement);
-    const  device = await RNBO.createDevice({ context, patcher });    
+    //const sourceNode = context.createMediaElementSource(radioElement);
+    playerDevice = await RNBO.createDevice({ context, patcher: playerPatcher });    
+    const  fxDevice = await RNBO.createDevice({ context, patcher: fxPatcher  });    
+
     
+
+    let dependencies = await fetch("export/dependencies.json");
+    dependencies = await dependencies.json();
+
+    // Load the dependencies into the device
+    const results = playerDevice.loadDataBufferDependencies(dependencies);
+
+
+
+
     // Connect the devices in series
+    playerDevice.node.connect(context.destination);    
+    //fxDevice.node.connect(context.destination);
 
-    sourceNode.connect(device.node);
-    device.node.connect(context.destination);
 
-    inputX = device.parametersById.get("inputX");
-    inputY = device.parametersById.get("inputY");
-    inputZ = device.parametersById.get("inputZ");
+    inputX = fxDevice.parametersById.get("inputX");
+    inputY = fxDevice.parametersById.get("inputY");
+    inputZ = fxDevice.parametersById.get("inputZ");
 
 
   } catch (error) {
