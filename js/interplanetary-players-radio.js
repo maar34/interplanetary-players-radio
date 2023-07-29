@@ -757,9 +757,16 @@ async function createRNBO() {
     let WAContext = window.AudioContext || window.webkitAudioContext;
     context = new WAContext();
 
-    radioStreamURL = radio.radioURL;
+    if (navigator.connection) {
+      const speed = navigator.connection.downlink;
+
+      radioStreamURL = speed > 1 ? radio.radioURL : radio.radioLow;
 
 
+    } else {
+      radioStreamURL = radio.radioLow;
+    }
+    print (radioStreamURL);
     // Fetch the exported RNBO patch
 
     let rawPatcher = await fetch(patchExportURL);
