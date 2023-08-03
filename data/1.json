@@ -7,6 +7,7 @@
          "mp3file": "data/Rabbit_Hole_Maar.mp3",
          "radioURL": "https://s1.ssl-stream.com//listen/maar_world_radio/mw-radio-hi?&_ic2=1691065520937",
          "radioLow": "https://s1.ssl-stream.com//listen/maar_world_radio/mw-radio-low?&_ic2=1690641657591",
+         "radioHLS": "https://s1.ssl-stream.com/hls/maar_world_radio/live.m3u8",
          "initTime": "111.",
          "endTime": "333.",
          "speed": "1.",

@@ -43,6 +43,8 @@ var radio = {
   wavfile: "",
   mp3file: "",
   radioURL: "",
+  radioLow: "",
+  radioHLS: "",
   initTime: "",
   endTime: "",
   speed: "",
@@ -760,11 +762,11 @@ async function createRNBO() {
     if (navigator.connection) {
       const speed = navigator.connection.downlink;
 
-      radioStreamURL = speed > 1 ? radio.radioURL : radio.radioLow;
+      radioStreamURL = speed > 1 ? radio.radioHLS : radio.radioHLS;
 
 
     } else {
-      radioStreamURL = radio.radioLow;
+      radioStreamURL = radio.radioHLS;
     }
     print (radioStreamURL);
     // Fetch the exported RNBO patch
